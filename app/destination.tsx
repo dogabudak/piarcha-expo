@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-nati
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Dropdown } from '@/components/dropdown';
 import { Tour, Attraction } from '@/data/mockData';
 import { ApiService } from '@/services/api';
 
@@ -25,55 +26,21 @@ function LocationSelector({
 }: LocationSelectorProps) {
   return (
     <ThemedView style={styles.selectorContainer}>
-      <ThemedView style={styles.dropdownContainer}>
-        <ThemedText style={styles.label}>Country</ThemedText>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-          {countries.map((country) => (
-            <Pressable
-              key={country}
-              style={[
-                styles.option,
-                selectedCountry === country && styles.selectedOption,
-              ]}
-              onPress={() => onCountryChange(country)}
-            >
-              <ThemedText
-                style={[
-                  styles.optionText,
-                  selectedCountry === country && styles.selectedOptionText,
-                ]}
-              >
-                {country}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </ThemedView>
-
-      <ThemedView style={styles.dropdownContainer}>
-        <ThemedText style={styles.label}>City</ThemedText>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-          {cities.map((city) => (
-            <Pressable
-              key={city}
-              style={[
-                styles.option,
-                selectedCity === city && styles.selectedOption,
-              ]}
-              onPress={() => onCityChange(city)}
-            >
-              <ThemedText
-                style={[
-                  styles.optionText,
-                  selectedCity === city && styles.selectedOptionText,
-                ]}
-              >
-                {city}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </ThemedView>
+      <Dropdown
+        label="Country"
+        options={countries}
+        selectedValue={selectedCountry}
+        onValueChange={onCountryChange}
+        placeholder="Select a country"
+      />
+      
+      <Dropdown
+        label="City"
+        options={cities}
+        selectedValue={selectedCity}
+        onValueChange={onCityChange}
+        placeholder="Select a city"
+      />
     </ThemedView>
   );
 }
@@ -381,34 +348,6 @@ const styles = StyleSheet.create({
   selectorContainer: {
     padding: 20,
     paddingTop: 10,
-  },
-  dropdownContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
-  },
-  horizontalScroll: {
-    flexGrow: 0,
-  },
-  option: {
-    backgroundColor: '#e9ecef',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginRight: 10,
-    borderRadius: 20,
-  },
-  selectedOption: {
-    backgroundColor: '#007AFF',
-  },
-  optionText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  selectedOptionText: {
-    color: '#fff',
   },
   section: {
     margin: 20,

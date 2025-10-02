@@ -1,8 +1,8 @@
 import { MOCK_DATA, Tour, Attraction } from '@/data/mockData';
 
 // API configuration
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.piarcha.com';
-const USE_MOCK_DATA = process.env.EXPO_PUBLIC_USE_MOCK === 'true' || !process.env.EXPO_PUBLIC_API_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3019';
+const USE_MOCK_DATA = process.env.EXPO_PUBLIC_USE_MOCK === 'true';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -53,13 +53,8 @@ export class ApiService {
         throw new ApiError(`HTTP error! status: ${response.status}`, response.status);
       }
 
-      const result: ApiResponse<T> = await response.json();
-      
-      if (!result.success) {
-        throw new ApiError(result.error || 'API request failed');
-      }
-
-      return result.data;
+      const result = await response.json();
+      return result;
     } catch (error) {
       console.warn('API request failed, falling back to mock data:', error);
       return this.getMockData<T>(endpoint);
@@ -76,8 +71,8 @@ export class ApiService {
         const basePath = endpoint.split('?')[0];
         
         switch (basePath) {
-          case '/countries':
-            resolve(MOCK_DATA.countries as T);
+          case '/countryList':
+            resolve({ countries: MOCK_DATA.countries } as T);
             break;
           case '/tours':
             resolve(MOCK_DATA.tours as T);
@@ -86,7 +81,7 @@ export class ApiService {
             resolve(MOCK_DATA.attractions as T);
             break;
           default:
-            if (basePath.startsWith('/cities/')) {
+            if (basePath.startsWith('/cityList/')) {
               const country = basePath.split('/')[2];
               const cities = MOCK_DATA.cities[country] || [];
               resolve(cities as T);
@@ -94,7 +89,7 @@ export class ApiService {
             }
             if (basePath.startsWith('/coordinates/')) {
               // Mock coordinates response
-              resolve({ lat: 41.0082, lng: 28.9784 } as T);
+              resolve({ coordinates: [{ city: 'Istanbul', name: 'Example Location', x: 41.0082, y: 28.9784 }] } as T);
               break;
             }
             resolve([] as T);
@@ -104,11 +99,12 @@ export class ApiService {
   }
 
   static async getCountries(): Promise<string[]> {
-    return this.request<string[]>('/countries');
+    const response = await this.request<{countries: string[]}>('/countryList');
+    return response.countries || response as any; // Handle both response formats
   }
 
   static async getCities(country: string): Promise<string[]> {
-    return this.request<string[]>(`/cities/${encodeURIComponent(country)}`);
+    return this.request<string[]>(`/cityList/${encodeURIComponent(country)}`);
   }
 
   static async getTours(country?: string, city?: string): Promise<Tour[]> {
@@ -130,6 +126,12 @@ export class ApiService {
   }
 
   static async getCoordinates(city: string): Promise<{ lat: number; lng: number }> {
-    return this.request<{ lat: number; lng: number }>(`/coordinates/${encodeURIComponent(city)}`);
+    const response = await this.request<{ coordinates: Array<{ city: string; name: string; x: number; y: number }> }>(`/coordinates/${encodeURIComponent(city)}`);
+    // Convert backend format to expected format
+    if (response.coordinates && response.coordinates.length > 0) {
+      const coord = response.coordinates[0];
+      return { lat: coord.x, lng: coord.y };
+    }
+    return { lat: 41.0082, lng: 28.9784 }; // Default coordinates
   }
 }
