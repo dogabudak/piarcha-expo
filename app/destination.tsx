@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Dropdown } from '@/components/dropdown';
-import { Tour, Attraction } from '@/data/mockData';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Attraction, Tour } from '@/data/mockData';
 import { ApiService } from '@/services/api';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 interface LocationSelectorProps {
   countries: string[];
@@ -114,6 +115,7 @@ interface LoadingStates {
 }
 
 export default function Destination() {
+  const router = useRouter();
   const [selectedCountry, setSelectedCountry] = useState('Turkey');
   const [selectedCity, setSelectedCity] = useState('');
   
@@ -227,7 +229,7 @@ export default function Destination() {
   };
 
   const handleTourPress = (tourId: number) => {
-    console.log('Tour pressed:', tourId);
+    router.push(`/tour?tourId=${tourId}` as any);
   };
 
   const handleDownload = async () => {
