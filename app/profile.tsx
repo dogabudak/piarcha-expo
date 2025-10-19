@@ -1,17 +1,19 @@
+import Button from '@/components/button';
 import { Dropdown } from '@/components/dropdown';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    TextInput
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput
 } from 'react-native';
 
 // Sample data - replace with your actual data source
@@ -31,6 +33,8 @@ const INTERESTS = [
 ];
 
 export default function Profile() {
+  const { logout } = useAuth();
+  
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [birthdate, setBirthdate] = useState(new Date());
@@ -302,20 +306,39 @@ export default function Profile() {
       </ThemedView>
 
       <ThemedView style={styles.buttonContainer}>
-        <Pressable 
-          style={[styles.saveButton, isLoading && styles.disabledButton]} 
+        <Button
+          title={isLoading ? 'Saving...' : 'Save Profile'}
           onPress={handleSaveProfile}
           disabled={isLoading}
-        >
-          <IconSymbol 
-            name={isLoading ? "arrow.clockwise" : "checkmark.circle.fill"} 
-            size={20} 
-            color="#fff" 
-          />
-          <ThemedText style={styles.saveButtonText}>
-            {isLoading ? 'Saving...' : 'Save Profile'}
-          </ThemedText>
-        </Pressable>
+          backgroundColor="#007AFF"
+          style={styles.saveButton}
+        />
+        
+        <Button
+          title="Logout"
+          onPress={() => {
+            Alert.alert(
+              'Logout',
+              'Are you sure you want to logout?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                  text: 'Logout', 
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await logout();
+                    } catch (error) {
+                      Alert.alert('Error', 'Failed to logout. Please try again.');
+                    }
+                  }
+                }
+              ]
+            );
+          }}
+          backgroundColor="#FF3B30"
+          style={styles.logoutButton}
+        />
       </ThemedView>
     </ScrollView>
   );
@@ -421,21 +444,12 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   saveButton: {
-    backgroundColor: '#007AFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    marginBottom: 12,
   },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-    opacity: 0.6,
+  logoutButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
   },
 });
