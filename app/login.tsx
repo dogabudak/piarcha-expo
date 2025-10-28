@@ -4,15 +4,13 @@ import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/contexts/AuthContext';
 import React, { useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    ScrollView,
-    StyleSheet,
-    TextInput,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TextInput
 } from 'react-native';
 
-const {width} = Dimensions.get('window');
-
+//Should have a go back button
 export default function Login() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
@@ -104,12 +102,6 @@ export default function Login() {
             backgroundColor="#007AFF"
             style={styles.loginButton}
           />
-        </ThemedView>
-
-        <ThemedView style={styles.footer}>
-          <ThemedText style={styles.footerText}>
-            Don't have an account? Contact support for access.
-          </ThemedText>
         </ThemedView>
       </ThemedView>
     </ScrollView>

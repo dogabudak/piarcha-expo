@@ -8,7 +8,6 @@ import { ActivityIndicator } from 'react-native';
 export default function Index() {
   const { isAuthenticated } = useAuth();
 
-  // Show loading while checking authentication
   if (isAuthenticated === null) {
     return (
       <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
