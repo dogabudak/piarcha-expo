@@ -167,7 +167,7 @@ export default function Destination() {
     try {
       setLoading(prev => ({ ...prev, countries: true }));
       const data = await ApiService.getCountries();
-      setCountries(data);
+      setCountries(data.countries);
       setError(null);
     } catch (err) {
       setError('Failed to load countries');

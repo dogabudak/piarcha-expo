@@ -14,6 +14,7 @@ export interface Attraction {
 
 export interface MockData {
   countries: string[];
+  featuredCountries: string[];
   cities: Record<string, string[]>;
   tours: Tour[];
   attractions: Attraction[];
@@ -21,6 +22,7 @@ export interface MockData {
 
 export const MOCK_DATA: MockData = {
   countries: ['Turkey', 'Italy', 'Spain', 'Greece', 'France'],
+  featuredCountries: ['Turkey', 'Italy'],
   cities: {
     'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Antalya'],
     'Italy': ['Rome', 'Milan', 'Naples', 'Florence'],

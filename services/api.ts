@@ -10,6 +10,11 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+export interface CountryListResponse {
+  countries: string[];
+  featured: string[];
+}
+
 class ApiError extends Error {
   constructor(message: string, public status?: number) {
     super(message);
@@ -72,7 +77,10 @@ export class ApiService {
         
         switch (basePath) {
           case '/countryList':
-            resolve({ countries: MOCK_DATA.countries } as T);
+            resolve({
+              countries: MOCK_DATA.countries,
+              featured: MOCK_DATA.featuredCountries
+            } as T);
             break;
           case '/tours':
             resolve(MOCK_DATA.tours as T);
@@ -98,9 +106,8 @@ export class ApiService {
     }) as T;
   }
 
-  static async getCountries(): Promise<string[]> {
-    const response = await this.request<{countries: string[]}>('/countryList');
-    return response.countries || response as any; // Handle both response formats
+  static async getCountries(): Promise<CountryListResponse> {
+    return this.request<CountryListResponse>('/countryList');
   }
 
   static async getCities(country: string): Promise<string[]> {
