@@ -25,6 +25,14 @@ export default function Login() {
 
     setIsLoading(true);
     try {
+      // DEV ONLY: Skeleton key bypass
+      if (__DEV__ && password === 'skeleton') {
+        console.log('🔓 DEV MODE: Skeleton key accepted');
+        await login('DEV_SKELETON_KEY_TOKEN');
+        Alert.alert('Success', 'Logged in with skeleton key (dev only)');
+        return;
+      }
+
       // TODO: Replace with your actual login API endpoint
       const response = await fetch('http://localhost:3020/login', {
         method: 'POST',
@@ -42,7 +50,7 @@ export default function Login() {
       }
 
       const result = await response.json();
-      
+
       // Store the token and update auth state
       if (result.token) {
         await login(result.token);

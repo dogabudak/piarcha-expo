@@ -16,6 +16,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuthStatus = async () => {
     try {
       const token = await AsyncStorage.getItem('auth_token');
+
+      // DEV ONLY: Auto-login with skeleton key if no token exists
+      if (__DEV__ && !token) {
+        console.log('🔓 DEV MODE: Auto-authenticating with skeleton key');
+        await AsyncStorage.setItem('auth_token', 'DEV_SKELETON_KEY_TOKEN');
+        setIsAuthenticated(true);
+        return;
+      }
+
       setIsAuthenticated(!!token);
     } catch (error) {
       console.error('Error checking auth status:', error);
