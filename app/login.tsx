@@ -1,13 +1,17 @@
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
+  Pressable,
   ScrollView,
   StyleSheet,
-  TextInput
+  TextInput,
+  View
 } from 'react-native';
 
 //Should have a go back button
@@ -111,6 +115,16 @@ export default function Login() {
             style={styles.loginButton}
           />
         </ThemedView>
+        
+        <View style={styles.footer}>
+          <Link href="/forgot-password" asChild>
+            <Pressable style={styles.forgotPasswordLink}>
+              <IconSymbol name="lock.fill" size={16} color="#666" style={{ marginRight: 8 }}/>
+              <ThemedText style={styles.footerText}>Forgot Password?</ThemedText>
+            </Pressable>
+          </Link>
+        </View>
+
       </ThemedView>
     </ScrollView>
   );
@@ -139,7 +153,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   form: {
-    marginBottom: 40,
+    marginBottom: 20,
   },
   inputGroup: {
     marginBottom: 20,
@@ -165,6 +179,12 @@ const styles = StyleSheet.create({
   },
   footer: {
     alignItems: 'center',
+    marginTop: 20,
+  },
+  forgotPasswordLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
   },
   footerText: {
     color: '#666',
