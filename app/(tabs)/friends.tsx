@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -86,6 +87,7 @@ export default function Friends() {
 
   return (
     <ThemedView style={styles.page}>
+      <BackButton />
       <View style={styles.searchContainer}>
         <IconSymbol name="magnifyingglass" size={20} color="#666" style={styles.searchIcon} /> 
         <TextInput

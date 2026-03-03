@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import { Dropdown } from '@/components/dropdown';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -258,7 +259,8 @@ export default function Destination() {
 
   return (
     <ScrollView style={styles.container}>
-      <PageHeader 
+      <BackButton />
+      <PageHeader
         title="Select your next destination"
         subtitle="Choose a country and city to explore amazing tours and attractions"
       />

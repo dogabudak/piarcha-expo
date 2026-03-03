@@ -20,7 +20,6 @@ This is a React Native Expo app using Expo Router for navigation with TypeScript
 - `(tabs)/` - Tab-based navigation group
   - `_layout.tsx` - Tab layout with Home and Explore tabs
   - `index.tsx` - Home screen (currently has welcome content)
-  - `explore.tsx` - Explore screen
 
 #### `/components/` - Reusable components
 - `themed-text.tsx` - Text component with theme support

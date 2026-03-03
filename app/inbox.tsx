@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import React from 'react';
 import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '../components/themed-text';
@@ -52,6 +53,7 @@ const Inbox: React.FC = () => {
 
   return (
     <ThemedView style={styles.page}>
+      <BackButton />
       <FlatList
         data={messageList}
         renderItem={renderMessage}

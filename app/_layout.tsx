@@ -22,7 +22,9 @@ function RootLayoutNav() {
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="tour" options={{ headerShown: false }} />
         <Stack.Screen name="tutorial" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        <Stack.Screen name="start" options={{ headerShown: false }} />
+        <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+        <Stack.Screen name="inbox" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import React, { useRef } from 'react';
 import { Animated, ImageStyle, StyleSheet, View } from 'react-native';
 
@@ -38,6 +39,7 @@ function FadeIn(props: FadeInImageProps) {
 
 const Tutorial = () => (
   <View style={styles.container}>
+    <BackButton />
     <FadeIn
       style={styles.image}
       source={require('@/assets/images/icon.png')}

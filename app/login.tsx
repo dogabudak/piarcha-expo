@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -14,7 +15,6 @@ import {
   View
 } from 'react-native';
 
-//Should have a go back button
 export default function Login() {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
@@ -71,6 +71,7 @@ export default function Login() {
   };
   return (
     <ScrollView style={styles.container}>
+      <BackButton />
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
           <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>

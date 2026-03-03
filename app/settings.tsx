@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -69,6 +70,7 @@ export default function Settings() {
 
   return (
     <ScrollView style={styles.container}>
+      <BackButton />
       <ThemedView style={styles.content}>
         <ThemedView style={styles.header}>
           <ThemedText type="title" style={styles.title}>Settings</ThemedText>

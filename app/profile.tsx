@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { Dropdown } from '@/components/dropdown';
 import { ThemedText } from '@/components/themed-text';
@@ -157,6 +158,7 @@ export default function Profile() {
 
   return (
     <ScrollView style={styles.container}>
+      <BackButton />
       <ThemedView style={styles.header}>
         <ThemedText type="title" style={styles.headerTitle}>Profile</ThemedText>
         <ThemedText style={styles.headerSubtitle}>

@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -31,9 +32,10 @@ export default function ForgotPassword() {
 
   return (
     <ScrollView style={styles.container}>
+      <BackButton />
       <ThemedView style={styles.content}>
         <View style={styles.header}>
-          <Image 
+          <Image
             source={require('@/assets/images/react-logo.png')} 
             style={styles.logo}
             resizeMode="contain"

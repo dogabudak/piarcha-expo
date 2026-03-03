@@ -1,3 +1,4 @@
+import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -80,6 +81,7 @@ export default function Register() {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <ImageBackground
         source={require('@/assets/images/icon.png')}
         resizeMode="cover"
