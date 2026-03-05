@@ -6,39 +6,82 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
+import MapView, { Marker, Region } from 'react-native-maps';
 
 import Button from '@/components/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useSideMenu } from '@/contexts/SideMenuContext';
 
-const { height } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
-const MAP_PLACEHOLDER_MESSAGE =
-  'Map requires a development build (react-native-maps). Run with a dev client to see the map.';
+const INITIAL_REGION: Region = {
+  latitude: 41.0082, // Istanbul
+  longitude: 28.9784,
+  latitudeDelta: 0.05,
+  longitudeDelta: 0.05,
+};
 
 export default function MapScreen() {
-  const [locationStatus, setLocationStatus] = useState<string>('Checking…');
+  const [region, setRegion] = useState<Region>(INITIAL_REGION);
+  const [locationStatus, setLocationStatus] = useState<string>('Initializing…');
+  const [isLoading, setIsLoading] = useState(true);
   const { open } = useSideMenu();
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setLocationStatus('Location permission denied');
-        return;
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocationStatus('Location permission denied');
+          setIsLoading(false);
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        const currentRegion = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        };
+        
+        setRegion(currentRegion);
+        setLocationStatus('Location ready');
+      } catch (error) {
+        console.error('Error getting location:', error);
+        setLocationStatus('Error getting location');
+      } finally {
+        setIsLoading(false);
       }
-      setLocationStatus('Location ready (map placeholder)');
     })();
   }, []);
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.mapPlaceholder}>
-        <ThemedText style={styles.placeholderText}>{MAP_PLACEHOLDER_MESSAGE}</ThemedText>
-        <ThemedText style={styles.locationStatus}>{locationStatus}</ThemedText>
-      </View>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <ThemedText style={styles.loadingText}>{locationStatus}</ThemedText>
+        </View>
+      ) : (
+        <MapView
+          style={styles.map}
+          initialRegion={region}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+        >
+          <Marker
+            coordinate={{
+              latitude: region.latitude,
+              longitude: region.longitude,
+            }}
+            title="You are here"
+          />
+        </MapView>
+      )}
 
       <View style={styles.bottomContainer}>
         <View style={styles.buttons}>
@@ -64,23 +107,21 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  mapPlaceholder: {
+  map: {
+    width: width,
+    height: height,
+    ...StyleSheet.absoluteFillObject,
+  },
+  loadingContainer: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e8e8e8',
-    padding: 24,
+    backgroundColor: '#f5f5f5',
   },
-  placeholderText: {
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  locationStatus: {
-    fontSize: 12,
-    color: '#666',
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
   },
   bottomContainer: {
     position: 'absolute',
@@ -91,15 +132,21 @@ const styles = StyleSheet.create({
   },
   buttons: {
     paddingBottom: 20,
+    width: '90%',
   },
   panel: {
     width: '100%',
     height: height / 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   menuButton: {
     position: 'absolute',
