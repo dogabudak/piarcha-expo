@@ -1,4 +1,4 @@
-import { MOCK_DATA, Tour, Attraction } from '@/data/mockData';
+import { MOCK_DATA, MOCK_GENERATED_TOUR, Tour, Attraction, GeneratedTour } from '@/data/mockData';
 
 // API configuration
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3019';
@@ -95,6 +95,10 @@ export class ApiService {
               resolve(cities as T);
               break;
             }
+            if (basePath === '/generate-tour') {
+              resolve(MOCK_GENERATED_TOUR as T);
+              break;
+            }
             if (basePath.startsWith('/coordinates/')) {
               // Mock coordinates response
               resolve({ coordinates: [{ city: 'Istanbul', name: 'Example Location', x: 41.0082, y: 28.9784 }] } as T);
@@ -130,6 +134,32 @@ export class ApiService {
     
     const query = params.toString() ? `?${params.toString()}` : '';
     return this.request<Attraction[]>(`/attractions${query}`);
+  }
+
+  static async generateTour(
+    city: string,
+    preferences: { tourType: 'walking' | 'biking'; duration: number; interests: string[] }
+  ): Promise<GeneratedTour> {
+    if (USE_MOCK_DATA) {
+      console.log('Using mock data for: /generate-tour');
+      return this.getMockData<GeneratedTour>('/generate-tour');
+    }
+
+    try {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/generate-tour`, {
+        method: 'POST',
+        body: JSON.stringify({ city, preferences }),
+      });
+
+      if (!response.ok) {
+        throw new ApiError(`HTTP error! status: ${response.status}`, response.status);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn('generateTour API failed, falling back to mock data:', error);
+      return MOCK_GENERATED_TOUR;
+    }
   }
 
   static async getCoordinates(city: string): Promise<{ lat: number; lng: number }> {

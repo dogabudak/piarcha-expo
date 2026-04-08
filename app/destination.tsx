@@ -3,7 +3,7 @@ import { Dropdown } from '@/components/dropdown';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Attraction, Tour } from '@/data/mockData';
+import { Attraction, Tour, GeneratedTour } from '@/data/mockData';
 import { ApiService } from '@/services/api';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -233,6 +233,29 @@ export default function Destination() {
     router.push(`/tour?tourId=${tourId}` as any);
   };
 
+  const [generatingTour, setGeneratingTour] = useState(false);
+
+  const handleGenerateTour = async () => {
+    if (!selectedCity || !selectedCountry) return;
+
+    try {
+      setGeneratingTour(true);
+      const tour = await ApiService.generateTour(selectedCity, {
+        tourType: 'walking',
+        duration: 3,
+        interests: ['history'],
+      });
+      router.push({
+        pathname: '/tour',
+        params: { tourData: JSON.stringify(tour) },
+      } as any);
+    } catch (err) {
+      console.error('Error generating tour:', err);
+    } finally {
+      setGeneratingTour(false);
+    }
+  };
+
   const handleDownload = async () => {
     if (!selectedCity || !selectedCountry) return;
     
@@ -316,11 +339,29 @@ export default function Destination() {
       )}
       
       <ThemedView style={styles.buttonContainer}>
-        <Pressable 
+        <Pressable
+          style={[
+            styles.generateButton,
+            (!selectedCity || !selectedCountry || generatingTour) && styles.disabledButton
+          ]}
+          onPress={handleGenerateTour}
+          disabled={!selectedCity || !selectedCountry || generatingTour}
+        >
+          {generatingTour ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <IconSymbol name="sparkles" size={20} color="#fff" />
+          )}
+          <ThemedText style={styles.buttonText}>
+            {generatingTour ? 'Generating...' : 'Generate AI Tour'}
+          </ThemedText>
+        </Pressable>
+
+        <Pressable
           style={[
             styles.downloadButton,
             (!selectedCity || !selectedCountry) && styles.disabledButton
-          ]} 
+          ]}
           onPress={handleDownload}
           disabled={!selectedCity || !selectedCountry}
         >
@@ -420,6 +461,16 @@ const styles = StyleSheet.create({
     margin: 20,
     marginTop: 10,
     marginBottom: 40,
+  },
+  generateButton: {
+    backgroundColor: '#8B5CF6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    gap: 8,
+    marginBottom: 12,
   },
   downloadButton: {
     backgroundColor: '#007AFF',
