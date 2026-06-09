@@ -51,8 +51,9 @@ export default function MapScreen() {
         setRegion(currentRegion);
         setLocationStatus('Location ready');
       } catch (error) {
-        console.error('Error getting location:', error);
-        setLocationStatus('Error getting location');
+        console.warn('Error getting location, using default:', error);
+        setRegion(INITIAL_REGION);
+        setLocationStatus('Using default location');
       } finally {
         setIsLoading(false);
       }

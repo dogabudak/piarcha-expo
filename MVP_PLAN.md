@@ -49,7 +49,6 @@ A semi-social mobile app for solo travelers. Download AI-generated tours for the
 
 ### Tasks
 
-- [ ] Decide: recover deleted screens from git or rewrite from scratch in Expo project
 - [ ] Set up environment configuration (`.env` files for all services)
 - [ ] Replace all hardcoded localhost URLs with environment variables
 - [ ] Configure valid Google Maps API key
@@ -135,7 +134,6 @@ User selects a city, generates or picks a tour, downloads it, and follows it on 
 
 ### 2.2 Traveler Profiles
 
-- [ ] Complete profile screen: photo, bio, languages, travel style, home country
 - [ ] Public profile view (extend existing `/public-user/:username`)
 - [ ] "Currently in [City]" badge on profile
 - [ ] "Send message" button on public profiles
@@ -143,8 +141,6 @@ User selects a city, generates or picks a tour, downloads it, and follows it on 
 ### 2.3 Messaging
 
 - [ ] Set up Firebase Firestore (or Supabase) for real-time messaging
-- [ ] 1:1 chat screen with text messages
-- [ ] Chat list screen (replace dummy inbox)
 - [ ] Unread message count badge
 - [ ] Push notifications for new messages (Expo Notifications)
 - [ ] Basic moderation: report and block users

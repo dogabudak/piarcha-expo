@@ -1,4 +1,5 @@
 import { BackButton } from '@/components/back-button';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '../components/themed-text';
@@ -30,11 +31,12 @@ const messageList = [
 
 type MessageItemProps = {
   item: typeof messageList[0];
+  onPress: () => void;
 };
 
-const MessageItem: React.FC<MessageItemProps> = ({ item }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ item, onPress }) => {
   return (
-    <TouchableOpacity style={styles.messageItem}>
+    <TouchableOpacity style={styles.messageItem} onPress={onPress}>
       <Image source={item.avatarImage} style={styles.avatar} />
       <View style={styles.messageContent}>
         <ThemedText style={styles.name}>{item.name}</ThemedText>
@@ -47,8 +49,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ item }) => {
 };
 
 const Inbox: React.FC = () => {
+  const router = useRouter();
+
   const renderMessage = ({ item }: { item: typeof messageList[0] }) => (
-    <MessageItem item={item} />
+    <MessageItem
+      item={item}
+      onPress={() => router.push(`/chat?id=${item.id}&name=${encodeURIComponent(item.name)}`)}
+    />
   );
 
   return (

@@ -4,7 +4,9 @@
       "Bash(mkdir:*)",
       "Bash(npx tsc --noEmit 2>&1 | head -30)",
       "Bash(npx expo install @react-navigation/drawer 2>&1)",
-      "Bash(npx tsc --noEmit 2>&1 | head -20)"
+      "Bash(npx tsc --noEmit 2>&1 | head -20)",
+      "Bash(xcrun simctl list runtimes 2>&1)",
+      "Bash(xcodebuild -version 2>&1)"
     ],
     "deny": []
   }
