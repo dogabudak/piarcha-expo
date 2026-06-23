@@ -1,8 +1,10 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { BackButton } from '@/components/back-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { GeneratedTour, TourStop } from '@/data/mockData';
+import { estimateTravelTime } from '@/utils/travel-time';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -31,6 +33,25 @@ function TourHeader({ tour }: { tour: GeneratedTour }) {
         </ThemedView>
       </ThemedView>
     </ThemedView>
+  );
+}
+
+function TravelBetweenStops({ from, to }: { from: TourStop; to: TourStop }) {
+  const estimate = estimateTravelTime(from.x, from.y, to.x, to.y);
+  return (
+    <View style={styles.travelBetween}>
+      <View style={styles.travelLine} />
+      <View style={styles.travelInfo}>
+        <FontAwesome name="male" size={12} color="#4CAF50" />
+        <ThemedText style={styles.travelText}>{estimate.walkingMinutes} min walk</ThemedText>
+        <ThemedText style={styles.travelDot}>·</ThemedText>
+        <FontAwesome name="bicycle" size={12} color="#2196F3" />
+        <ThemedText style={styles.travelText}>{estimate.bikingMinutes} min bike</ThemedText>
+        <ThemedText style={styles.travelDot}>·</ThemedText>
+        <ThemedText style={styles.travelText}>{estimate.distanceKm} km</ThemedText>
+      </View>
+      <View style={styles.travelLine} />
+    </View>
   );
 }
 
@@ -82,8 +103,13 @@ export default function Tour() {
       <TourHeader tour={tour} />
       <ThemedView style={styles.stopsSection}>
         <ThemedText type="subtitle" style={styles.stopsTitle}>Tour Stops</ThemedText>
-        {tour.stops.map((stop) => (
-          <StopCard key={stop.order} stop={stop} />
+        {tour.stops.map((stop, index) => (
+          <React.Fragment key={stop.order}>
+            <StopCard stop={stop} />
+            {index < tour.stops.length - 1 && (
+              <TravelBetweenStops from={stop} to={tour.stops[index + 1]} />
+            )}
+          </React.Fragment>
         ))}
       </ThemedView>
     </ScrollView>
@@ -188,6 +214,33 @@ const styles = StyleSheet.create({
   stopMetaText: {
     color: '#999',
     fontSize: 13,
+  },
+  travelBetween: {
+    alignItems: 'center',
+    marginVertical: 4,
+    marginBottom: 12,
+  },
+  travelLine: {
+    width: 1,
+    height: 8,
+    backgroundColor: '#ddd',
+  },
+  travelInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  travelText: {
+    fontSize: 12,
+    color: '#666',
+  },
+  travelDot: {
+    fontSize: 12,
+    color: '#ccc',
   },
   emptyState: {
     flex: 1,

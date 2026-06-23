@@ -61,11 +61,12 @@ export function SideMenu() {
 
   return (
     <>
-      {isOpen && (
-        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={close} />
-        </Animated.View>
-      )}
+      <Animated.View
+        pointerEvents={isOpen ? 'auto' : 'none'}
+        style={[styles.overlay, { opacity: overlayOpacity }]}
+      >
+        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
+      </Animated.View>
 
       <Animated.View style={[styles.menu, { transform: [{ translateX }] }]}>
         <View style={styles.header}>

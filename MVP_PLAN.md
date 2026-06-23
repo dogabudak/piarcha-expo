@@ -10,7 +10,12 @@ A semi-social mobile app for solo travelers. Download AI-generated tours for the
 
 ### What Works
 - Auth flow (login, register, token persistence)
-- Basic map with markers and geolocation tracking
+- Interactive map with geolocation tracking and tour stop markers
+- Nearest-stop detection — map auto-selects the closest attraction to user
+- Walking/biking travel time estimation (Haversine-based, offline)
+- Route drawing on map via `react-native-maps-directions` (requires Google Maps API key)
+- Walk/Bike mode toggle with live time display in bottom panel
+- Tour detail screen with travel time between consecutive stops
 - Locations service (countries, cities, attractions) on Express + MongoDB
 - User service (Fastify + MongoDB) with location tracking and search
 - Token generation (Rust/Rocket) + JWT verification service
@@ -19,8 +24,7 @@ A semi-social mobile app for solo travelers. Download AI-generated tours for the
 
 ### What's Broken or Missing
 - All page source files deleted from disk (staged deletions in git)
-- Hardcoded localhost URLs, empty Google Maps API key
-- Tour detail screen is a stub
+- Hardcoded localhost URLs, Google Maps API key not yet configured in `.env`
 - Friends and Inbox screens show dummy data only
 - No messaging infrastructure
 - No AI integration
@@ -51,7 +55,7 @@ A semi-social mobile app for solo travelers. Download AI-generated tours for the
 
 - [ ] Set up environment configuration (`.env` files for all services)
 - [ ] Replace all hardcoded localhost URLs with environment variables
-- [ ] Configure valid Google Maps API key
+- [ ] Configure valid Google Maps API key (code reads from `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY`; needs `.env` file with actual key)
 - [ ] Fix TypeScript issues — remove `@ts-ignore` comments, replace `any` types
 - [ ] Set up CI/CD pipeline (lint + type-check + build)
 - [ ] Dockerize backend services (Docker Compose for local dev)
@@ -97,12 +101,23 @@ App launches, user can register, log in, and see a map with their location.
   - Returns ordered tour with stops, descriptions, and estimated times
   - Caches generated tour in the same `tours[]` array for reuse
 - [ ] Tour generation UI — select preferences, generate, preview
-- [ ] Tour detail screen — ordered stop list, total distance, estimated duration
+- [x] Tour detail screen — ordered stop list, total distance, estimated duration
+  - Shows walking/biking travel time between consecutive stops (Haversine estimate)
 
 ### 1.3 Interactive Map (Upgrade)
 
-- [ ] Display tour route on map with numbered stop markers
-- [ ] Draw walking/biking route between stops (directions API)
+- [x] Display tour route on map with numbered stop markers
+  - All tour stops shown as colored markers (nearest = purple, others = red)
+- [x] Draw walking/biking route between stops (directions API)
+  - Integrated `react-native-maps-directions` (`MapViewDirections`) to draw actual road route
+  - Walk/Bike toggle changes route color (green for walk, blue for bike)
+  - Requires `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` in `.env` for route drawing
+  - Falls back to Haversine-based estimate when API key is absent
+- [x] Nearest-stop detection — automatically finds the closest tour stop to user's current location
+  - Uses Haversine formula with 1.3x road factor for distance estimation
+  - `findNearest()` and `sortByNearest()` utilities in `utils/travel-time.ts`
+- [x] Travel time display — bottom panel shows walking/biking minutes to next stop
+  - Shows Google Directions API duration when available, Haversine estimate otherwise
 - [ ] Current stop detection via proximity (< 50m triggers "arrived" state)
 - [ ] Stop detail bottom sheet — description, photo, "mark as visited"
 - [ ] Tour progress indicator (3/8 stops visited)
