@@ -1,5 +1,6 @@
 import { BackButton } from '@/components/back-button';
 import { Dropdown } from '@/components/dropdown';
+import { Skeleton, SkeletonListItem } from '@/components/skeleton';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -7,7 +8,7 @@ import { Attraction, Tour, GeneratedTour } from '@/data/mockData';
 import { ApiService } from '@/services/api';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 interface LocationSelectorProps {
   countries: string[];
@@ -94,6 +95,43 @@ function AttractionsListSection({ attractions }: AttractionsListSectionProps) {
             <ThemedText style={styles.rating}>{attraction.rating}</ThemedText>
           </ThemedView>
         </ThemedView>
+      ))}
+    </ThemedView>
+  );
+}
+
+function SkeletonTourList() {
+  return (
+    <ThemedView style={styles.section}>
+      <Skeleton height={20} width="50%" borderRadius={4} style={{ marginBottom: 16 }} />
+      {[1, 2, 3].map((i) => (
+        <View key={i} style={styles.skeletonItem}>
+          <View style={styles.skeletonItemContent}>
+            <Skeleton height={16} width="70%" borderRadius={4} />
+            <Skeleton height={12} width="40%" borderRadius={4} style={{ marginTop: 8 }} />
+          </View>
+          <Skeleton height={20} width={20} borderRadius={4} />
+        </View>
+      ))}
+    </ThemedView>
+  );
+}
+
+function SkeletonAttractionList() {
+  return (
+    <ThemedView style={styles.section}>
+      <Skeleton height={20} width="55%" borderRadius={4} style={{ marginBottom: 16 }} />
+      {[1, 2, 3, 4].map((i) => (
+        <View key={i} style={styles.skeletonItem}>
+          <View style={styles.skeletonItemContent}>
+            <Skeleton height={16} width="60%" borderRadius={4} />
+            <Skeleton height={12} width="30%" borderRadius={4} style={{ marginTop: 8 }} />
+          </View>
+          <View style={styles.skeletonRating}>
+            <Skeleton height={16} width={16} borderRadius={8} />
+            <Skeleton height={14} width={24} borderRadius={4} />
+          </View>
+        </View>
       ))}
     </ThemedView>
   );
@@ -314,10 +352,7 @@ export default function Destination() {
       {selectedCity && (
         <>
           {loading.tours ? (
-            <ThemedView style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#007AFF" />
-              <ThemedText style={styles.loadingText}>Loading tours...</ThemedText>
-            </ThemedView>
+            <SkeletonTourList />
           ) : (
             <TourListSection
               tours={tours}
@@ -326,13 +361,10 @@ export default function Destination() {
           )}
 
           {loading.attractions ? (
-            <ThemedView style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#007AFF" />
-              <ThemedText style={styles.loadingText}>Loading attractions...</ThemedText>
-            </ThemedView>
+            <SkeletonAttractionList />
           ) : (
-            <AttractionsListSection 
-              attractions={attractions} 
+            <AttractionsListSection
+              attractions={attractions}
             />
           )}
         </>
@@ -527,5 +559,27 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#fff',
     fontWeight: '600',
+  },
+  skeletonItem: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  skeletonItemContent: {
+    flex: 1,
+  },
+  skeletonRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });

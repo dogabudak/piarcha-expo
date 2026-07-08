@@ -1,5 +1,6 @@
 import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
+import { SkeletonListItem } from '@/components/skeleton';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -108,13 +109,24 @@ export default function Friends() {
         />
       </View>
 
-      <FlatList
-        data={displayList}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContainer}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
+      {isLoading ? (
+        <View style={styles.skeletonContainer}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <View key={i}>
+              <SkeletonListItem avatarSize={50} lines={2} />
+              <View style={styles.separator} />
+            </View>
+          ))}
+        </View>
+      ) : (
+        <FlatList
+          data={displayList}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContainer}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      )}
     </ThemedView>
   );
 }
@@ -175,5 +187,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#eee',
     marginLeft: 80, // Indent separator to align with text
+  },
+  skeletonContainer: {
+    paddingHorizontal: 0,
   },
 });

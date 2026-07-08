@@ -46,6 +46,51 @@ A semi-social mobile app for solo travelers. Download AI-generated tours for the
 
 ---
 
+## Asset Structure
+
+Creative and visual assets should be organized in the `/assets/` directory:
+
+```
+assets/
+├── images/              # Icons, backgrounds, illustrations
+│   ├── icon.png         # App icon (referenced in app.json)
+│   ├── splash-icon.png  # Splash screen (referenced in app.json)
+│   ├── favicon.png      # Web favicon
+│   ├── backgrounds/     # Background images for screens
+│   └── illustrations/   # Decorative illustrations
+│
+├── icons/               # Custom icon sets (SVG or PNG)
+│   ├── navigation/      # Tab bar, header icons
+│   ├── actions/         # Button icons
+│   └── markers/         # Map marker icons
+│
+├── fonts/               # Custom typography
+│   └── CustomFont.ttf   # Load via expo-font in _layout.tsx
+│
+├── audio/               # Music & sound effects
+│   ├── music/           # Background music, tour audio
+│   └── sfx/             # UI sound effects
+│
+├── videos/              # Video content (onboarding, tutorials)
+│
+└── animations/          # Lottie JSON files
+    └── loading.json     # Animated loading states
+```
+
+### Asset Usage
+
+| Asset Type | Location | Library |
+|------------|----------|---------|
+| App Icon | `assets/images/icon.png` | Configured in `app.json` |
+| Splash Screen | `assets/images/splash-icon.png` | Configured in `app.json` |
+| Backgrounds | `assets/images/backgrounds/` | `require()` or `Image` component |
+| Custom Icons | `assets/icons/` | `Image` or SVG component |
+| Fonts | `assets/fonts/` | `expo-font` |
+| Audio/Music | `assets/audio/` | `expo-av` |
+| Lottie | `assets/animations/` | `lottie-react-native` |
+
+---
+
 ## Phase 0 — Foundation Cleanup
 
 **Goal:** Get the app bootable, buildable, and deployable.
@@ -101,23 +146,9 @@ App launches, user can register, log in, and see a map with their location.
   - Returns ordered tour with stops, descriptions, and estimated times
   - Caches generated tour in the same `tours[]` array for reuse
 - [ ] Tour generation UI — select preferences, generate, preview
-- [x] Tour detail screen — ordered stop list, total distance, estimated duration
-  - Shows walking/biking travel time between consecutive stops (Haversine estimate)
 
 ### 1.3 Interactive Map (Upgrade)
 
-- [x] Display tour route on map with numbered stop markers
-  - All tour stops shown as colored markers (nearest = purple, others = red)
-- [x] Draw walking/biking route between stops (directions API)
-  - Integrated `react-native-maps-directions` (`MapViewDirections`) to draw actual road route
-  - Walk/Bike toggle changes route color (green for walk, blue for bike)
-  - Requires `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` in `.env` for route drawing
-  - Falls back to Haversine-based estimate when API key is absent
-- [x] Nearest-stop detection — automatically finds the closest tour stop to user's current location
-  - Uses Haversine formula with 1.3x road factor for distance estimation
-  - `findNearest()` and `sortByNearest()` utilities in `utils/travel-time.ts`
-- [x] Travel time display — bottom panel shows walking/biking minutes to next stop
-  - Shows Google Directions API duration when available, Haversine estimate otherwise
 - [ ] Current stop detection via proximity (< 50m triggers "arrived" state)
 - [ ] Stop detail bottom sheet — description, photo, "mark as visited"
 - [ ] Tour progress indicator (3/8 stops visited)
@@ -191,7 +222,7 @@ User can see other travelers in the same city, view profiles, send messages, and
 ### 3.3 Quality and Safety
 
 - [ ] Error boundaries on all screens
-- [ ] Loading states and skeleton screens
+- [x] Loading states and skeleton screens
 - [ ] Empty states with helpful prompts
 - [ ] Rate limiting on messaging endpoints
 - [ ] Content moderation basics (report user, block user)
@@ -223,6 +254,131 @@ A solo traveler can:
 3. **Use the tour offline** after downloading it
 4. **See other travelers** in the same city
 5. **Message another traveler** to meet up
+
+---
+
+## Design Improvements
+
+**Goal:** Transform the app from functional prototype to polished, travel-inspiring experience.
+
+### Current Design Issues
+
+- Hardcoded colors scattered across files (#007AFF, #f8f9fa, etc.)
+- Single button style — no variants for different contexts
+- Start screen lacks visual hierarchy and brand identity
+- Profile screen needs complete redesign (noted in code: "style here is horrible")
+- No consistent spacing or typography scale
+- Minimal animations and micro-interactions
+- No custom illustrations or empty states
+- Basic form styling across login/register screens
+
+---
+
+### D.1 Design System Foundation
+
+- [ ] **Expanded color palette** — Define semantic colors in `constants/theme.ts`:
+  - Primary, secondary, accent colors
+  - Success, warning, error, info states
+  - Surface colors (card, elevated, overlay)
+  - Text hierarchy (primary, secondary, muted, disabled)
+- [ ] **Typography scale** — Add custom font loading in `_layout.tsx`:
+  - Display, heading, body, caption sizes
+  - Consider travel-friendly fonts (e.g., Plus Jakarta Sans, Inter, or Poppins)
+- [ ] **Spacing system** — Consistent spacing tokens (4, 8, 12, 16, 20, 24, 32, 48)
+- [ ] **Shadow system** — Elevation levels (sm, md, lg, xl)
+- [ ] **Border radius system** — Consistent radii (sm: 4, md: 8, lg: 12, xl: 20, full: 9999)
+
+### D.2 Component Library Enhancement
+
+- [ ] **Button variants** — Extend `components/button.tsx`:
+  - Primary (filled), Secondary (outlined), Ghost (text-only)
+  - Danger variant for destructive actions
+  - Size variants (sm, md, lg)
+  - Loading state with spinner
+  - Icon support (leading/trailing)
+- [ ] **Input component** — Create `components/input.tsx`:
+  - Consistent styling with focus states
+  - Error state with message
+  - Icon support (left/right)
+  - Password visibility toggle
+- [ ] **Card component** — Create `components/card.tsx`:
+  - Elevated and flat variants
+  - Pressable variant with scale animation
+- [ ] **Avatar component** — For user profiles and traveler lists
+- [ ] **Badge/Chip component** — For tags, interests, status indicators
+- [ ] **Bottom sheet component** — Gesture-enabled sheet for map panel
+
+### D.3 Screen Redesigns
+
+#### Start/Landing Screen
+- [ ] Hero section with travel illustration or animated background
+- [ ] App logo and tagline
+- [ ] Clear visual hierarchy: primary CTA (Sign Up) vs secondary (Login)
+- [ ] "Continue without login" as subtle text link
+- [ ] Social proof or feature highlights
+
+#### Auth Screens (Login/Register)
+- [ ] Consistent card-based form layout
+- [ ] Inline validation with helpful messages
+- [ ] Password strength indicator (register)
+- [ ] Remember me toggle
+- [ ] OAuth buttons styling (future: Google, Apple)
+
+#### Map Screen
+- [ ] Custom map markers matching brand colors
+- [ ] Improved bottom panel with drag handle
+- [ ] Tour progress visualization (step dots or mini timeline)
+- [ ] Active stop card with image preview
+- [ ] Floating action buttons styling
+
+#### Profile Screen
+- [ ] Profile header with avatar and edit button
+- [ ] Section cards with icons
+- [ ] Better chip/tag selection UI
+- [x] Progress indicator for profile completion
+
+#### Destination/City Screen
+- [ ] Hero image with gradient overlay
+- [ ] City stats (attractions, tours, travelers)
+- [ ] Tour cards with thumbnails
+- [ ] "Travelers nearby" preview section
+
+### D.4 Animations & Micro-interactions
+
+- [ ] **Screen transitions** — Fade/slide animations via React Navigation
+- [ ] **Button feedback** — Scale on press, ripple effect
+- [ ] **Loading states** — Skeleton screens for lists/cards
+- [ ] **Lottie animations**:
+  - Loading spinner
+  - Success checkmark
+  - Empty states (no tours, no messages)
+  - Onboarding illustrations
+- [ ] **Map animations** — Smooth marker selection, route drawing
+
+### D.5 Empty States & Feedback
+
+- [ ] Design empty state illustrations for:
+  - No tours available
+  - No messages
+  - No friends/travelers nearby
+  - Search no results
+- [ ] Toast/snackbar component for notifications
+- [ ] Pull-to-refresh styling
+- [ ] Error state screens with retry action
+
+### D.6 Navigation Polish
+
+- [ ] **Tab bar redesign** — Custom icons, active state styling
+- [ ] **Side menu enhancement** — User avatar, active state, section dividers
+- [ ] **Header styling** — Consistent back button, title styling
+- [ ] **Status bar** — Proper light/dark handling per screen
+
+### D.7 Brand Assets
+
+- [ ] App icon variations (store, notification, spotlight)
+- [ ] Splash screen with brand animation
+- [ ] Custom map marker icons (current location, tour stop, visited)
+- [ ] Illustration style guide for empty states
 
 ---
 

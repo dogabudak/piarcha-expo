@@ -1,13 +1,14 @@
 import { BackButton } from '@/components/back-button';
 import Button from '@/components/button';
 import { Dropdown } from '@/components/dropdown';
+import { ProfileCompletionIndicator } from '@/components/profile-completion-indicator';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAuth } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Alert,
   Platform,
@@ -50,13 +51,27 @@ export default function Profile() {
   // TODO countries you want to visit from the list
   // TODO Privacy
   // TODO User shouldnt be able to open here if he did not logged in
-  // TODO style here is horrible
-   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Track if birthdate has been explicitly changed from default
+  const [birthdateChanged, setBirthdateChanged] = useState(false);
+
+  // Calculate profile completion fields
+  const profileFields = useMemo(() => [
+    { label: 'First Name', isComplete: firstName.trim().length > 0 },
+    { label: 'Last Name', isComplete: lastName.trim().length > 0 },
+    { label: 'Birth Date', isComplete: birthdateChanged },
+    { label: 'Country', isComplete: selectedCountry.length > 0 },
+    { label: 'City', isComplete: selectedCity.trim().length > 0 },
+    { label: 'Languages', isComplete: selectedLanguages.length > 0 },
+    { label: 'Interests', isComplete: selectedInterests.length > 0 },
+  ], [firstName, lastName, birthdateChanged, selectedCountry, selectedCity, selectedLanguages, selectedInterests]);
 
   const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setBirthdate(selectedDate);
+      setBirthdateChanged(true);
     }
   };
 
@@ -164,6 +179,10 @@ export default function Profile() {
         <ThemedText style={styles.headerSubtitle}>
           Tell us about yourself to get personalized recommendations
         </ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.completionContainer}>
+        <ProfileCompletionIndicator fields={profileFields} />
       </ThemedView>
 
       <ThemedView style={styles.section}>
@@ -361,6 +380,10 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     color: '#666',
     lineHeight: 22,
+  },
+  completionContainer: {
+    marginHorizontal: 20,
+    marginBottom: 10,
   },
   section: {
     margin: 20,

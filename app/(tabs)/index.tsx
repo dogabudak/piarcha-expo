@@ -12,6 +12,7 @@ import MapView, { Marker, Region } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
 import Button from '@/components/button';
+import { SkeletonMapPanel } from '@/components/skeleton';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useSideMenu } from '@/contexts/SideMenuContext';
@@ -279,7 +280,7 @@ export default function MapScreen() {
               </View>
             </>
           ) : (
-            <ThemedText>Calculating travel time...</ThemedText>
+            <SkeletonMapPanel />
           )}
         </View>
       </View>

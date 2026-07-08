@@ -9,7 +9,8 @@
       "Bash(xcodebuild -version 2>&1)",
       "Bash(npx tsc --noEmit --pretty 2>&1 | head -40)",
       "Bash(npx tsc --noEmit --pretty 2>&1 | grep -E \"index\\\\.tsx|tour\\\\.tsx|travel-time\\\\.ts\")",
-      "Bash(npx expo start --clear 2>&1 | head -15)"
+      "Bash(npx expo start --clear 2>&1 | head -15)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
