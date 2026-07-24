@@ -139,12 +139,6 @@ App launches, user can register, log in, and see a map with their location.
   - Add `stops[]` array to tour (ordered list of coordinates with sequence number)
   - Add `estimatedDuration`, `distanceKm`, `generatedBy` (manual | ai) fields
   - Add `preferences` field (interests, pace, accessibility)
-- [ ] **Add POST `/generate-tour`** endpoint to `piarch-a-locations`:
-  - Accepts: city, preferences (walking/biking, duration, interests)
-  - Fetches city's existing coordinates/attractions from DB
-  - Calls Claude API with attractions + preferences as context
-  - Returns ordered tour with stops, descriptions, and estimated times
-  - Caches generated tour in the same `tours[]` array for reuse
 - [ ] Tour generation UI — select preferences, generate, preview
 
 ### 1.3 Interactive Map (Upgrade)
@@ -335,7 +329,6 @@ A solo traveler can:
 - [ ] Profile header with avatar and edit button
 - [ ] Section cards with icons
 - [ ] Better chip/tag selection UI
-- [x] Progress indicator for profile completion
 
 #### Destination/City Screen
 - [ ] Hero image with gradient overlay

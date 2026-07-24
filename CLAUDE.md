@@ -69,3 +69,61 @@ The app uses a stack navigator with:
 
 ## Current State
 The app currently shows a welcome screen with setup instructions. The main entry point is `app/(tabs)/index.tsx`.
+
+---
+
+# Architecture
+
+> System-level architecture for the whole Piarcha product (extracted from `MVP_PLAN.md`).
+> The Expo app (`piarcha-expo`) documented above is the frontend of this system.
+
+## Architecture Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Frontend framework | Expo (`piarcha-expo`) | OTA updates, EAS Build, push notifications out of the box, simpler dev setup |
+| AI tour generation | Extend `piarch-a-locations` with a `POST /generate-tour` endpoint calling a free/open-weight LLM via **OpenRouter** (OpenAI-compatible) | Tour schema and attraction data already live here; no separate service needed. Uses the `openai` SDK pointed at OpenRouter, so the provider is swappable (Groq, Ollama, etc.) via env vars. Falls back to a deterministic tour when no API key is configured. |
+| Real-time chat | Firebase Firestore or Supabase | No need to build WebSocket infra for MVP |
+| Offline maps | MapLibre + pre-cached tiles or Google Maps tile caching | Critical for travelers on spotty connections |
+| State management | Zustand or Redux Toolkit | Current vanilla Redux is too verbose; RTK Query or Zustand simplifies data fetching |
+| Deployment | Railway or Fly.io + MongoDB Atlas | Cheap, simple, production-ready |
+
+## Backend Service Map (MVP Target)
+
+```
+Mobile App (Expo)
+    │
+    ├── piarch-a-token-rs        (Rust)   — Login, JWT generation
+    ├── piarch-a-verification    (Node)   — Token validation
+    ├── piarch-a-user            (Node)   — Profiles, location, search
+    ├── piarch-a-locations       (Node)   — Cities, attractions, tours + AI tour generation (extended)
+    └── Firebase Firestore                — NEW: Real-time messaging
+```
+
+```
+Admin Panel (React)
+    │
+    ├── piarch-a-locations       — Manage cities and attractions
+    └── piarch-a-user            — User management
+```
+
+## Services & Tech Stack
+
+| Service | Stack | Responsibility |
+|---------|-------|----------------|
+| `piarcha-expo` | React Native / Expo Router / TypeScript | Mobile frontend (this repo) |
+| `piarch-a-locations` | Express + MongoDB | Countries, cities, attractions, tours, AI tour generation (`/generate-tour`) |
+| `piarch-a-user` | Fastify + MongoDB | User profiles, location tracking, search |
+| `piarch-a-token-rs` | Rust / Rocket | Login, JWT generation |
+| `piarch-a-verification` | Node | JWT / token validation |
+| `piarch-a-admin-panel` | React (early stage) | Admin management of cities, attractions, users |
+| `piarch-a-interfaces` | Shared TypeScript package | Common interfaces/types across services |
+| Firebase Firestore | Managed (planned) | Real-time messaging (not yet built) |
+
+### `piarch-a-locations` — key details
+- Runs on port **3019**.
+- Location schema embeds `tours[]` per city (`tourName`, `shortDescription`, `tourType`).
+- AI-generated tours are cached in a separate `generated_tours` collection (keyed by `cityName` + `tourType` + `duration`), not in the embedded `tours[]`.
+- `GET /coordinates/:city` returns attractions with descriptions; `GET /tours/:city` returns generated tours; `POST /generate-tour` accepts `{ city, preferences }` and returns an ordered tour with stops, descriptions, and estimated times.
+- `TourType` enum: Bike, Hike, Trekking. `AttractionType` enum: Church, Column, Museum, Shop, Palace, Mosque, Cistern, House, Square, Park, Castle, Information.
+- Env: `MONGODB`, `PORT`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_BASE_URL`.
